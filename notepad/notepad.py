@@ -20,14 +20,15 @@ class StartQt4(QtGui.QMainWindow):
         # openFile --> button (slot) | clicked() --> SIGNAL | fileOpen --> action method
         QtCore.QObject.connect(self.ui.openFile, QtCore.SIGNAL('clicked()'), self.fileOpen)
         QtCore.QObject.connect(self.ui.saveFile, QtCore.SIGNAL('clicked()'), self.fileSave)
-        #QtCore.QObject.connect(self.ui.closeFile, QtCore.SIGNAL('clicked()'), self.fileClose())
+        # save button should be enabled only when there is txt file opened
+        QtCore.QObject.connect(self.ui.closeFile, QtCore.SIGNAL('textChanged()'), self.enableSave)
 
     def fileOpen(self):
         """
             open a txt file and display its contents on to the text edit
 
         """
-        self.ui.textEdit.setText("Fuzzy Brain")  # shows up as soon as we click the file open button
+        #self.ui.textEdit.setText("Fuzzy Brain")  # shows up as soon as we click the file open button
         f = QtGui.QFileDialog(self)
         self.file_name = f.getOpenFileName()
         from os.path import isfile
@@ -35,6 +36,7 @@ class StartQt4(QtGui.QMainWindow):
             #import codecs
             s = open(self.file_name, 'r').read()
             self.ui.textEdit.setPlainText(s)  # read file is displayed on to the text editor
+            self.ui.saveFile.setEnabled(False)  # save button is disabled
 
     def fileSave(self):
         """
@@ -47,6 +49,14 @@ class StartQt4(QtGui.QMainWindow):
             s = codecs.open(self.file_name, 'w', 'utf-8')
             s.write(unicode(self.ui.textEdit.toPlainText()))
             s.close()
+            self.ui.saveFile.setEnabled(False)
+
+    def enableSave(self):
+        """
+
+
+        """
+        self.ui.saveFile.setEnabled(True)
 
     def fileClose(self):
         """
